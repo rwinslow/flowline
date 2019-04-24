@@ -1,5 +1,15 @@
 import inspect
+import logging
+import sys
 
+
+logging.basicConfig(
+    level=logging.WARNING,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+    ]
+)
 
 class Flowline(object):
     """Flowline Python workflow engine.
@@ -18,10 +28,11 @@ class Flowline(object):
     - Task objects with a run method defined.
     """
 
-    def __init__(self, name, tasks=tuple(), **kwargs):
+    def __init__(self, name, tasks=tuple(), debug=False, **kwargs):
         self.name = name
         self.tasks = tasks
         self.self_arg = self.__class__.__name__.lower()
+        self.debug = debug
         self.save_kwargs(kwargs)
 
     def run(self, context, **kwargs):
@@ -53,11 +64,16 @@ class Flowline(object):
         """
         self.save_kwargs(kwargs)
         for task in self.tasks:
+            self.logger.info('Running {}'.format(task.__name__))
             if inspect.isfunction(task):
                 if self.self_arg in inspect.signature(task).parameters:
                     context = task(context, flowline=self)
                 else:
                     context = task(context)
+            elif inspect.isclass(task):
+                task_inst = task(flowline=self)
+                context = task_inst.run(context)
+
             yield context
 
     def save_kwargs(self, kwargs):
@@ -69,3 +85,10 @@ class Flowline(object):
         """
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+    @property
+    def logger(self):
+        logger = logging.getLogger(self.name)
+        if self.debug:
+            logger.setLevel(logging.DEBUG)
+        return logger
