@@ -25,7 +25,9 @@ class Flowline(object):
     - Functions that take one argument that will store the context. An
         optional second argument named `flowline` may be added as a reference
         to the parent Flowline for store and access to constants.
-    - Task objects with a run method defined.
+    - Task object declarations with a run method defined.
+    - Task object instances with a run method defined.
+    - Flowline instances with defined tasks.
     """
 
     def __init__(self, name, tasks=tuple(), verbose=False, **kwargs):

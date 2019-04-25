@@ -14,12 +14,19 @@ def test_task_function_full(context, flowline):
 
 test_task_inst = TestTask(None)
 
+intermediate_flowline = Flowline(
+    name='Intermediate',
+    tasks=[test_task_function],
+    verbose=True
+)
+
 test_flowline = Flowline(
     name='Test',
     tasks=[
         TestTask,
         test_task_inst,
         test_task_function,
+        intermediate_flowline,
         test_task_function_full
     ],
     verbose=True
