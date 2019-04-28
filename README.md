@@ -1,4 +1,20 @@
-# Flowline Python workflow engine.
+# Flowline
+
+## Python workflow engine
+
+Software is often broken down in to specific workflows that accept a specific input object or value, where that input gets interpreted and transformed to produce the desired result.
+
+Flowline makes this easier by allowing you to define functions and classes as tasks to be run in predefined and controlled workflows. In addition to having a clear definition, it is significantly easier to expand, update, and modularize your software.
+
+## Installation
+
+From the command line or your virtual environment, run
+
+```python
+pip install git+https://github.com/rwinslow/flowline.git
+```
+
+## Usage
 
 Accepts a single object as a context at runtime. Each task is called in
 order where the returned value from each task is passed to the following
@@ -15,16 +31,6 @@ Tasks may be:
 - Task object declarations with a run method defined.
 - Task object instances with a run method defined.
 - Flowline instances with defined tasks.
-
-## Installation
-
-From the command line or your virtual environment, run
-
-```python
-pip install git+https://github.com/rwinslow/flowline.git
-```
-
-## Usage
 
 ```python
 from flowline import Flowline, Task
