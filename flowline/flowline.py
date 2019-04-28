@@ -66,19 +66,48 @@ class Flowline(object):
         """
         self.save_kwargs(kwargs)
         for task in self.tasks:
-            if inspect.isfunction(task):  # Function.
+            # Function.
+            if inspect.isfunction(task):
+                # Logging.
                 self.logger.info('Running {}'.format(task.__name__))
+
+                # Call with appropriate args.
                 if self.self_arg in inspect.signature(task).parameters:
                     context = task(context, flowline=self)
                 else:
                     context = task(context)
-            elif isinstance(task, type):  # Class declaration.
-                task_inst = task(flowline=self)
-                self.logger.info('Running {}'.format(task_inst.name))
-                context = task_inst.run(context)
-            elif not isinstance(task, type):  # Class instance.
-                self.logger.info('Running {}'.format(task.name))
-                context = task.run(context)
+
+            # Class declaration.
+            elif isinstance(task, type):
+                # Instantiation.
+                if self.self_arg in inspect.signature(task).parameters:
+                    task_inst = task(flowline=self)
+                else:
+                    task_inst = task()
+
+                # Logging.
+                if getattr(task_inst, 'name', False):
+                    name = task_inst.name
+                else:
+                    name = task.__class__.__name__
+                self.logger.info('Running {}'.format(name))
+
+                # Run insertion point with appropriate args.
+                if self.self_arg in inspect.signature(task.run).parameters:
+                    context = task_inst.run(context, flowline=self)
+                else:
+                    context = task_inst.run(context)
+
+            # Class instance.
+            elif not isinstance(task, type):
+                # Logging.
+                self.logger.info('Running {}'.format(task.__class__.__name__))
+
+                # Run insertion point with appropriate args.
+                if self.self_arg in inspect.signature(task.run).parameters:
+                    context = task.run(context, flowline=self)
+                else:
+                    context = task.run(context)
 
             yield context
 
