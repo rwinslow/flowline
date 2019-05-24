@@ -5,11 +5,10 @@ import sys
 
 logging.basicConfig(
     level=logging.WARNING,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(sys.stdout),
-    ]
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)],
 )
+
 
 class Flowline(object):
     """Flowline Python workflow engine.
@@ -69,7 +68,7 @@ class Flowline(object):
             # Function.
             if inspect.isfunction(task):
                 # Logging.
-                self.logger.info('Running {}'.format(task.__name__))
+                self.logger.info("Running {}".format(task.__name__))
 
                 # Call with appropriate args.
                 if self.self_arg in inspect.signature(task).parameters:
@@ -86,11 +85,11 @@ class Flowline(object):
                     task_inst = task()
 
                 # Logging.
-                if getattr(task_inst, 'name', False):
+                if getattr(task_inst, "name", False):
                     name = task_inst.name
                 else:
                     name = task.__class__.__name__
-                self.logger.info('Running {}'.format(name))
+                self.logger.info("Running {}".format(name))
 
                 # Run insertion point with appropriate args.
                 if self.self_arg in inspect.signature(task.run).parameters:
@@ -101,7 +100,7 @@ class Flowline(object):
             # Class instance.
             elif not isinstance(task, type):
                 # Logging.
-                self.logger.info('Running {}'.format(task.__class__.__name__))
+                self.logger.info("Running {}".format(task.__class__.__name__))
 
                 # Run insertion point with appropriate args.
                 if self.self_arg in inspect.signature(task.run).parameters:
